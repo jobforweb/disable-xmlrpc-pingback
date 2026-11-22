@@ -73,6 +73,11 @@ disable-xmlrpc-pingback/
 add_filter( 'xmlrpc_enabled', '__return_false' );
 add_filter( 'pings_open', '__return_false', PHP_INT_MAX );
 
+// Обнуляем список методов XML-RPC на случай обхода фильтра xmlrpc_enabled.
+add_filter( 'xmlrpc_methods', function() {
+	return array();
+} );
+
 add_filter( 'wp_headers', function( $headers ) {
 	foreach ( array_keys( $headers ) as $name ) {
 		if ( 0 === strcasecmp( 'X-Pingback', (string) $name ) ) {
@@ -99,6 +104,8 @@ add_action( 'template_redirect', function() {
 	} );
 }, 0 );
 ```
+
+Приведённый код функционально эквивалентен плагину. В него намеренно не включены инфраструктурные элементы плагина — проверка `ABSPATH`, константа `DXP_VERSION` и загрузка textdomain: они не влияют на поведение и не нужны внутри `functions.php`.
 
 **Важно:** используйте только один вариант — плагин **или** код в теме. Одновременное применение дублирует фильтры и осложняет диагностику. Преимущество плагина: он не зависит от оформления, не затирается при обновлении темы и отключается одной кнопкой.
 
